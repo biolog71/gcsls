@@ -29,7 +29,7 @@ go build -o gcsls main.go
 ### Install with Go
 
 ```bash
-go install github.com/biolog71/gcsls@latest
+go install github.com/biolog71/gcsls@v0.0.2
 ```
 
 ## Authentication
