@@ -12,18 +12,50 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+// showHelp displays the usage information for the tool.
+func showHelp() {
+	fmt.Printf("gcsls - List Google Cloud Storage objects with wildcard support\n\n")
+	fmt.Printf("USAGE:\n")
+	fmt.Printf("  %s [OPTIONS] \"gs://bucket/object-pattern\"\n\n", os.Args[0])
+	fmt.Printf("OPTIONS:\n")
+	fmt.Printf("  -h, --help    Show this help message and exit\n\n")
+	fmt.Printf("EXAMPLES:\n")
+	fmt.Printf("  %s \"gs://my-bucket/logs/**/*.log\"\n", os.Args[0])
+	fmt.Printf("  %s \"gs://my-bucket/data/*.csv\"\n", os.Args[0])
+	fmt.Printf("  %s \"gs://my-bucket/folder/**/data.txt\"\n", os.Args[0])
+	fmt.Printf("  %s \"gs://my-bucket/\"\n\n", os.Args[0])
+	fmt.Printf("DESCRIPTION:\n")
+	fmt.Printf("  This tool lists objects in Google Cloud Storage that match a given pattern.\n")
+	fmt.Printf("  It supports glob patterns including:\n")
+	fmt.Printf("    *     - matches any sequence of characters (except /)\n")
+	fmt.Printf("    **    - matches any sequence of characters (including /)\n")
+	fmt.Printf("    ?     - matches any single character\n")
+	fmt.Printf("    [abc] - matches any character in the set\n\n")
+	fmt.Printf("AUTHENTICATION:\n")
+	fmt.Printf("  Ensure you have authenticated with Google Cloud:\n")
+	fmt.Printf("    gcloud auth application-default login\n")
+}
+
 // main is the entry point of the program.
 // It expects exactly one command-line argument: a GCS path like gs://bucket-name/prefix.
 // Example Usage:
 // go run . "gs://my-bucket/some-folder/*.csv"
 // go run . "gs://my-bucket/some-folder/**/data.txt"
 func main() {
+	// Check for help flags first
+	if len(os.Args) == 2 && (os.Args[1] == "-h" || os.Args[1] == "--help") {
+		showHelp()
+		os.Exit(0)
+	}
+
 	// Check for the correct number of command-line arguments.
 	if len(os.Args) != 2 {
 		fmt.Fprintf(os.Stderr, "Usage: %s \"gs://bucket/object-pattern\"\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Example: %s \"gs://my-bucket/logs/**/*.log\"\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Use -h or --help for more information.\n")
 		os.Exit(1)
 	}
+
 	gcsPath := os.Args[1]
 
 	// The context is used to manage the lifecycle of API requests.
